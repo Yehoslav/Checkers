@@ -13,7 +13,7 @@ class Position(NamedTuple):
 
 class Checker:
     @property
-    def pos(self):
+    def pos(self) -> Position:
         """The pos property."""
         return Position(self.file, self.rank)
 
@@ -47,7 +47,7 @@ def get_immetidate_moves(board, checker_pos, checker_type, checkers: Checker, mo
     """
 
     if move_chain is None:
-        move_chain = (( "start",  Checker.pos), )
+        move_chain = (( "start",  checker_pos), )
 
     def add(pos1: Position | tuple, pos2: tuple | Position ) -> Position:
         return Position(pos1[0] + pos2[0], pos1[1] + pos2[1])
