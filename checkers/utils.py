@@ -13,6 +13,19 @@ def alpha_to_pos(alpha: str) -> Position:
 def pos_to_alpha(pos: Position) -> str:
     return f"{'abcdefgh'[pos.file]}{pos.rank + 1}"
 
+def parse_move_chain(move_chain) -> str:
+    parsed_move = ""
+    for move in move_chain:
+        match move:
+            case ["start", c_pos]:
+                parsed_move += pos_to_alpha(c_pos)
+            case ["move", c_pos]:
+                parsed_move += " -> " + pos_to_alpha(c_pos)
+            case ["eat", b_pos, c_pos]:
+                parsed_move += " -/ " + pos_to_alpha(b_pos) + " /-> " + pos_to_alpha(c_pos )
+    return parsed_move
+
+
 def board_to_str(board: list[list[dict]], checkers: dict[Position, Checker]) -> str:
     str_board = "n | 1 2 3 4 5 6 7 8\n--+----------------\n"
     for i, column in enumerate(board):
