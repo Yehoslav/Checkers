@@ -53,8 +53,6 @@ def get_immetidate_moves(board, checker_pos, checker_type, checkers: Checker, mo
         return Position(pos1[0] + pos2[0], pos1[1] + pos2[1])
 
     def empty(board, pos) -> bool:
-        if not (0 <= pos.file <= 7 and 0 <= pos.rank <= 7):
-            return False
         return not board[pos.file][pos.rank]["is_occupied"]
 
     # Check each immidiate position if empty
@@ -71,7 +69,9 @@ def get_immetidate_moves(board, checker_pos, checker_type, checkers: Checker, mo
             if move[0] == 'eat' and move[1] == im_pos:
                 return move_chain + (("dead end", im_pos),)
 
-        # print(im_pos)
+        if not (0 <= im_pos.file <= 7 and 0 <= im_pos.rank <= 7):
+            return move_chain + (("dead end", im_pos),)
+
         if empty(board, im_pos):
             # print(im_pos, "is an empty cell")
             if move_chain[-1][0] == "start":
