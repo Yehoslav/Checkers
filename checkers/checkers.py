@@ -76,7 +76,7 @@ def get_immetidate_moves(board, checker_pos, checker_type, checkers: Checker, mo
             # print(im_pos, "is an empty cell")
             if move_chain[-1][0] == "start":
                 return move_chain + (("move", im_pos),)
-        else:
+        elif get_checker(im_pos, checkers).type != checker_type:
             jump_pos = add(checker_pos, add(direction, direction))
 
             if empty(board, jump_pos):
