@@ -23,6 +23,9 @@ class Checker:
         self.file = file
         self.rank = rank
 
+def to_dict(self):
+    return self.__dict__
+
 
 def get_cell(board, cell_pos: Position):
     return board[cell_pos.file][cell_pos.rank]
@@ -99,14 +102,11 @@ def get_moves(board, checker, checkers):
 
 
     while not found_all_moves(move_chains):
-        # if input("Continue: ") != "":
-        #     break
 
         for moves in move_chains:
             if moves[-1][0] == "eat":
                 move_chains = move_chains | get_immetidate_moves(board, moves[-1][2], checker.type, checkers, moves)
 
-        # print(move_chains)
         min_len += 1
 
     return {moves for moves in move_chains if moves[-1][0] != "dead end"}
@@ -115,22 +115,20 @@ def get_moves(board, checker, checkers):
 def move_checker(board, checker, f_pos: Position, checkers: set):
     move_chains = get_moves(board, checker, checkers)
 
-    def find_move(checker, final_position, move_chains):
+    def find_move(final_position, move_chains):
         for move_chain in move_chains:
             if move_chain[-1][-1] == final_position:
                 return move_chain
         return ()
 
 
-    move_chain = find_move(checker, f_pos, move_chains)
+    move_chain = find_move(f_pos, move_chains)
 
     if len(move_chain) == 0:
         Exception("Move not allowed!")
 
     for move in move_chain:
         match move:
-            case ("start", start_p):
-                continue 
             case ("eat", eat_p, end_p):
                 board[checker.file][checker.rank]["is_occupied"] = False
                 board[eat_p.file][eat_p.rank]["is_occupied"] = False
