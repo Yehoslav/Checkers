@@ -5,15 +5,16 @@ function createBoard() {
 
   for (var file = 0; file < 8; file++) {
     for (var rank = 0; rank < 8; rank++) {
+      console.log(`#${(0xfff - (0x00f*(rank+file)))}` )
       drawnBoard.push({
         rank: rank,
         file: file,
-        x: rank * 100,
-        y: file * 100,
+        x: file * 100,
+        y: 700-rank * 100,
         width: 100,
         height: 100,
-        fillcolor: (rank + file) % 2 == 0 ? "white" : "black",
-        cellType: (rank + file) % 2 == 0 ? "white" : "black",
+        fillcolor: (rank + file) % 2 == 0 ? `#${(0xaaa - (0x00a*(rank+file))).toString(16)}` : "white",
+        cellType: (rank + file) % 2 == 0 ? `#${(0xaaa - (0x00a*(rank+file))).toString(16)}` : "white",
         occupiedBy: null
       })
     }
@@ -49,8 +50,8 @@ function draw(board, checkers) {
   for (var checker of checkers) {
     ctx.beginPath();
     ctx.arc(
-      checker.rank * 100 + 50,
       checker.file * 100 + 50,
+      700 - checker.rank * 100 + 50,
       45, 1 * Math.PI, 4 * Math.PI);
     ctx.closePath();
     ctx.fillStyle = checker.type;
