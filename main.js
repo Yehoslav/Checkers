@@ -5,7 +5,6 @@ function createBoard() {
 
   for (var file = 0; file < 8; file++) {
     for (var rank = 0; rank < 8; rank++) {
-      console.log(`#${(0xfff - (0x00f*(rank+file)))}` )
       drawnBoard.push({
         rank: rank,
         file: file,
@@ -27,10 +26,17 @@ function hit(rect, x, y) {
   return (x >= rect.x && x <= rect.x + rect.width && y >= rect.y && y <= rect.y + rect.height);
 }
 
+function clearBoard(board) {
+  for (let square of board) {
+    square.occupiedBy = null;
+  }
+}
+
 function draw(board, checkers) {
   var canvas = document.getElementById("canvas");
   var ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  clearBoard(board);
   for (var i = 0; i < board.length; i++) {
     var rect = board[i];
 
@@ -117,7 +123,9 @@ function receiveMoves(board, websocket) {
           }
         }
         if (event.action === "move") {
+
           draw(board, event.checkers)
+          break;
         }
 
         draw(board, event.checkers)
