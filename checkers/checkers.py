@@ -60,10 +60,10 @@ def get_immetidate_moves(board, checker_pos, checker_type, checkers: Checker, mo
 
     # Check each immidiate position if empty
     d = 1 if checker_type == "white" else -1
-    FL = (d*-1,  1) # FrontLeft
-    FR = (d* 1,  1) # FrontRight
-    BR = (d*-1, -1) # BackRight
-    BL = (d* 1, -1) # BackLeft
+    FL = (-1, d* 1) # FrontLeft
+    FR = ( 1, d* 1) # FrontRight
+    BR = (-1, d*-1) # BackRight
+    BL = ( 1, d*-1) # BackLeft
 
 
     def get_im_moves(board, checker_pos, direction, move_chain):
