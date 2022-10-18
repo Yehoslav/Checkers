@@ -101,18 +101,18 @@ function initGame(websocket) {
 function receiveMoves(board, websocket) {
   websocket.addEventListener("message", ({ data }) => {
     const event = JSON.parse(data)
-    console.log(event)
+    // console.log(event)
     switch (event.type) {
       case "init":
         // Create link for inviting the second player
         document.querySelector(".join").href = "?join=" + event.join;
         document.querySelector(".watch").href = "?watch=" + event.watch_key;
-        console.log(event)
+        // console.log(event)
         player_id = event.player_id
         draw(board, event.checkers)
         break;
       case "play":
-        console.log(event)
+        // console.log(event)
         for (let rect of board) {
           let i = 0;
           if (event.action === "get_moves") {
@@ -143,7 +143,7 @@ function receiveMoves(board, websocket) {
         draw(board, event.checkers)
         break;
       case "error":
-        console.log(event.message)
+        // console.log(event.message)
       break;
       default:
         throw new Error(`Unsuported event type: ${event.type}`)
@@ -157,9 +157,8 @@ function handleMouseDown(e, rects, websocket) {
   var canvasOffset = $canvas.offset();
   var offsetX = canvasOffset.left;
   var offsetY = canvasOffset.top;
-  mouseX = parseInt(e.clientX - offsetX);
-  mouseY = parseInt(e.clientY - offsetY);
-  console.log(mouseX, mouseY)
+  mouseX = parseInt(e.clientX - offsetX) + window.scrollX;
+  mouseY = parseInt(e.clientY - offsetY) + window.scrollY;
   for (var i = 0; i < rects.length; i++) {
     var rect = rects[i];
     if (hit(rect, mouseX, mouseY)) {
@@ -168,7 +167,6 @@ function handleMouseDown(e, rects, websocket) {
         position: [rect.file, rect.rank],
         player_id: player_id,
       }
-      console.log(rect)
       if (rect.occupiedBy === player_skin) {
         event.action = 'get_moves'
         selected = rect
