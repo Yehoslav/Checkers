@@ -1,19 +1,22 @@
 let selected = null;
+let player_skin;
+let player_id;
 
 function createBoard() {
   var drawnBoard = []
+  const size = 50;
 
   for (var file = 0; file < 8; file++) {
     for (var rank = 0; rank < 8; rank++) {
       drawnBoard.push({
         rank: rank,
         file: file,
-        x: file * 100,
-        y: 700-rank * 100,
-        width: 100,
-        height: 100,
-        fillcolor: (rank + file) % 2 == 0 ? `#${(0xaaa - (0x00a*(rank+file))).toString(16)}` : "white",
-        cellType: (rank + file) % 2 == 0 ? `#${(0xaaa - (0x00a*(rank+file))).toString(16)}` : "white",
+        x: file * size,
+        y: 7*size - rank * size,
+        width: size,
+        height: size,
+        fillcolor: (rank + file) % 2 == 0 ? `#${(0xaaa - (0x00a * (rank + file))).toString(16)}` : "white",
+        cellType: (rank + file) % 2 == 0 ? `#${(0xaaa - (0x00a * (rank + file))).toString(16)}` : "white",
         occupiedBy: null
       })
     }
@@ -56,9 +59,9 @@ function draw(board, checkers) {
   for (var checker of checkers) {
     ctx.beginPath();
     ctx.arc(
-      checker.file * 100 + 50,
-      700 - checker.rank * 100 + 50,
-      45, 1 * Math.PI, 4 * Math.PI);
+      checker.file * rect.width + rect.width/2,
+      7*rect.height - checker.rank * rect.height + rect.height/2,
+      rect.width/2 - 5, 1 * Math.PI, 4 * Math.PI);
     ctx.closePath();
     ctx.fillStyle = checker.type;
     ctx.fill();
@@ -81,11 +84,15 @@ function initGame(websocket) {
     if (params.has("join")) {
       // Second player joins an existing game.
       event.join = params.get("join")
+      player_skin = "black"
+      event.player_skin = player_skin
     } else if (params.has('watch')) {
       // Spectator watches an existing game
       event.watch = params.get("watch")
     } else {
       // First player starts a new game.
+      player_skin = "white"
+      event.player_skin = player_skin
     }
     websocket.send(JSON.stringify(event))
   })
@@ -101,6 +108,7 @@ function receiveMoves(board, websocket) {
         document.querySelector(".join").href = "?join=" + event.join;
         document.querySelector(".watch").href = "?watch=" + event.watch_key;
         console.log(event)
+        player_id = event.player_id
         draw(board, event.checkers)
         break;
       case "play":
@@ -130,6 +138,13 @@ function receiveMoves(board, websocket) {
 
         draw(board, event.checkers)
         break;
+      case "join":
+        player_id = event.player_id
+        draw(board, event.checkers)
+        break;
+      case "error":
+        console.log(event.message)
+      break;
       default:
         throw new Error(`Unsuported event type: ${event.type}`)
     }
@@ -144,17 +159,18 @@ function handleMouseDown(e, rects, websocket) {
   var offsetY = canvasOffset.top;
   mouseX = parseInt(e.clientX - offsetX);
   mouseY = parseInt(e.clientY - offsetY);
+  console.log(mouseX, mouseY)
   for (var i = 0; i < rects.length; i++) {
     var rect = rects[i];
     if (hit(rect, mouseX, mouseY)) {
       let event = {
         type: "play",
-        position: [rect.file, rect.rank]
+        position: [rect.file, rect.rank],
+        player_id: player_id,
       }
       console.log(rect)
-      if (rect.occupiedBy === "white") {
+      if (rect.occupiedBy === player_skin) {
         event.action = 'get_moves'
-        console.log(event)
         selected = rect
 
       } else if (rect.fillcolor === "red") {
