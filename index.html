@@ -1,9 +1,14 @@
+<!DOCTYPE html5>
 <html>
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.9.1.js"></script>
     <style id="compiled-css" type="text/css">
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             /*from   w w w .ja v  a 2  s.  co  m*/
             background-color: ivory;
@@ -12,15 +17,66 @@
         #canvas {
             border: 1px solid red;
         }
+
+        .button-group {
+            padding-top: 10px;
+        }
+
+        .lobby {
+            text-align: center;
+            width: 400px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        .lobby li {
+            text-align: left;
+        }
+
+        .new-game {
+            display: inline-block;
+            background-color: #eee;
+            color: #222;
+            text-decoration: none;
+            padding: 10px;
+        }
+
+        .board {
+            width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            display: none;
+        }
     </style>
     <script src="main.js" type="text/javascript"></script>
+    <title>Checkers</title>
 </head>
 
 <body>
-    <h4>Click on a "menu" rect to toggle.</h4>
-    <a class="join" href="">Join</a>
-    <a class="watch" href="">Watch</a>
-    <canvas id="canvas" width="800" height="800"></canvas>
+    <main>
+        <h1>Colorful checkers</h1>
+        <div class="board">
+            <canvas id="canvas" width="400" height="400"></canvas>
+        </div>
+
+        <div class="lobby">
+            <div id="active-games" class="games-view">
+                <h2>Active games</h2>
+
+                <ul>
+                    <li>hello</li>
+                    <li>hello</li>
+                    <li>hello</li>
+                </ul>
+            </div>
+
+            <div class="new-area">
+                <a class="new-game" href="/game">New Game</a>
+            </div>
+
+        </div>
+
+    </main>
 </body>
 
 </html>
