@@ -12,7 +12,7 @@ function createBoard() {
         rank: rank,
         file: file,
         x: file * size,
-        y: 7*size - rank * size,
+        y: 7 * size - rank * size,
         width: size,
         height: size,
         fillcolor: (rank + file) % 2 == 0 ? `#${(0xaaa - (0x00a * (rank + file))).toString(16)}` : "white",
@@ -59,9 +59,9 @@ function draw(board, checkers) {
   for (var checker of checkers) {
     ctx.beginPath();
     ctx.arc(
-      checker.file * rect.width + rect.width/2,
-      7*rect.height - checker.rank * rect.height + rect.height/2,
-      rect.width/2 - 5, 1 * Math.PI, 4 * Math.PI);
+      checker.file * rect.width + rect.width / 2,
+      7 * rect.height - checker.rank * rect.height + rect.height / 2,
+      rect.width / 2 - 5, 1 * Math.PI, 4 * Math.PI);
     ctx.closePath();
     ctx.fillStyle = checker.type;
     ctx.fill();
@@ -81,7 +81,8 @@ function initGame(websocket) {
   websocket.addEventListener("open", () => {
     const params = new URLSearchParams(window.location.search)
     let event = { type: "init" }
-    if (params.has("join")) {
+    console.log()
+    if (params.has("join") && !params.has("start")) {
       // Second player joins an existing game.
       event.join = params.get("join")
       player_skin = "black"
@@ -105,8 +106,8 @@ function receiveMoves(board, websocket) {
     switch (event.type) {
       case "init":
         // Create link for inviting the second player
-        document.querySelector(".join").href = "?join=" + event.join;
-        document.querySelector(".watch").href = "?watch=" + event.watch_key;
+        // document.querySelector(".join").href = "?join=" + event.join;
+        // document.querySelector(".watch").href = "?watch=" + event.watch_key;
         // console.log(event)
         player_id = event.player_id
         draw(board, event.checkers)
@@ -144,7 +145,7 @@ function receiveMoves(board, websocket) {
         break;
       case "error":
         // console.log(event.message)
-      break;
+        break;
       default:
         throw new Error(`Unsuported event type: ${event.type}`)
     }
@@ -194,15 +195,56 @@ function sendMoves(board, websocket) {
   });
 }
 
+function createLobby(games) {
+  var gameList = $("#active-games")
+  
+  console.dir(games)
+  var items = "";
+  for (const game of games) {
+    const listItem = `<li>${game.join_key} : ${game.full ? "Full" : "1 player waiting"} <a class="btn-sm" href="?join=${game.join_key}">Join</a><a class="btn-sm" href="?watch=${game.watch_key}&action=watch">Watch</a></li>`
+    items = items.concat(listItem)
+  }
+  console.log(items)
+  gameList[0].innerHTML = items
+}
+
+function getGames(websocket) {
+  websocket.addEventListener("open", () => {
+    var event = {
+      type: "init",
+    }
+    websocket.send(JSON.stringify(event))
+  })
+  
+  websocket.addEventListener("message", ({ data }) => {
+    const event = JSON.parse(data)
+    if (event.type == "games") {
+      createLobby(event.games)
+    }
+  })
+}
+
+function closeLobby() {
+  $("#lobby")[0].style.display = "none"
+  $(".board")[0].style.display = "block"
+}
+
 window.addEventListener("DOMContentLoaded", () => {
-  // Initialize the UI.
-  const board = createBoard();
-  renderBoard(board, [
-  ])
   // Open the WebSocket connection and register event handlers.
   const websocket = new WebSocket("ws://192.168.1.6:8001/");
-  initGame(websocket);
-  receiveMoves(board, websocket);
-  sendMoves(board, websocket);
+  const url = new URLSearchParams(window.location.search);
+  if (url.has("join")) {
+    closeLobby()
+    // Initialize the UI.
+    const board = createBoard();
+    renderBoard(board, [])
+
+    initGame(websocket);
+    receiveMoves(board, websocket);
+    sendMoves(board, websocket);
+
+  } else {
+    getGames(websocket)
+  }
 });
 

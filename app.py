@@ -140,6 +140,17 @@ async def join(websocket, join_key, event):
     finally:
         connected.remove(websocket)
 
+async def get_games(websocket):
+    def is_two_players(game):
+        return len(game[0][-1]) == 2
+
+    games = [ {"join_key": game_id, "full": is_two_players(game)} 
+             for game_id, game in JOIN.items()]
+    event = {
+        "type": "games",
+        "games": games,
+    }
+    await websocket.send(json.dumps(event))
 
 async def handler(websocket):
     # Recieve and pars the "init" event from the UI.
@@ -153,9 +164,11 @@ async def handler(websocket):
     # elif "watch" in event:
     #     # spectator watches an existing game
     #     await watch(websocket, event["watch"])
-    else:
+    elif "player_skin" in event:
         # first player started a new game.
         await start(websocket, event)
+    else:
+        await get_games(websocket)
 
 
 async def main():
