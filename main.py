@@ -1,3 +1,6 @@
+"""
+Main.py is a cli ui for the checkers.
+"""
 from checkers import checkers as ch
 from checkers import utils as u
 import itertools
