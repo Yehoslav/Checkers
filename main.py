@@ -19,11 +19,12 @@ def main():
             case ["gm", alpha]:
                 pos = u.alpha_to_pos(alpha)
                 if ch.get_cell(board, pos)["is_occupied"]:
-                    print(  ch.get_moves(
+                    for move_chain in ch.get_moves(
                         board,
                         ch.get_checker(pos, w | b),
                         w | b,
-                    ))
+                    ):
+                        print(u.parse_move_chain(move_chain))
                 else: 
                     print("### The cell is blank!!!")
             case ["mv", s_pos, f_pos]:
